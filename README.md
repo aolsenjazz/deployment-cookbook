@@ -10,19 +10,32 @@ Every example in this cookbook follows the same shape. The framework and hosting
 
 ### 1. Agent runtime
 
-The agent itself — typically a LangGraph graph or [`deepagents`](https://www.npmjs.com/package/deepagents) coordinator — with tools, optional subagents, and middleware. It is compiled with a **checkpointer** so conversation state survives across turns. Examples start with an in-memory `MemorySaver` for simplicity; production deployments swap in Redis, Postgres, SQLite, or platform-specific storage.
+The agent itself, typically a LangGraph graph or [`deepagents`](https://www.npmjs.com/package/deepagents) coordinator, with tools, optional subagents, and middleware. It is compiled with a **checkpointer** so conversation state survives across turns. Examples start with an in-memory `MemorySaver` for simplicity; production deployments swap in Redis ([`@langchain/langgraph-checkpoint-redis`](https://www.npmjs.com/package/@langchain/langgraph-checkpoint-redis)), Postgres ([`@langchain/langgraph-checkpoint-postgres`](https://www.npmjs.com/package/@langchain/langgraph-checkpoint-postgres)), SQLite ([`@langchain/langgraph-checkpoint-sqlite`](https://www.npmjs.com/package/@langchain/langgraph-checkpoint-sqlite)), or platform-specific storage.
 
 ### 2. Protocol server
 
-HTTP route handlers that implement the Agent Streaming Protocol under `/api/threads/...`. At minimum you need three endpoints:
+HTTP route handlers implement the [Agent Streaming Protocol](https://github.com/langchain-ai/agent-protocol/tree/main/streaming) under `/api/threads/...`.
 
-| Method         | Path                              | Purpose                                      |
-| -------------- | --------------------------------- | -------------------------------------------- |
+#### Minimum (streaming chat)
+
+These three endpoints are enough to run a single-threaded streaming chat with
+`HttpAgentServerAdapter`:
+
+| Method         | Path                              | Purpose                                         |
+| -------------- | --------------------------------- | ----------------------------------------------- |
 | `POST`         | `/api/threads/:threadId/commands` | Accept commands (`run.start`, …) and start runs |
-| `POST`         | `/api/threads/:threadId/stream`   | SSE stream of protocol events for a run      |
-| `GET` / `POST` | `/api/threads/:threadId/state`    | Read and bootstrap checkpointed thread state |
+| `POST`         | `/api/threads/:threadId/stream`   | SSE stream of protocol events for a run         |
+| `GET` / `POST` | `/api/threads/:threadId/state`    | Read and bootstrap checkpointed thread state    |
 
-Optional endpoints for multi-thread UIs: list threads, delete a thread, and paginated checkpoint history.
+#### Thread sidebar (all examples)
+
+Every example here also implements endpoints for the thread-history sidebar:
+
+| Method   | Path                             | Purpose                                   |
+| -------- | -------------------------------- | ----------------------------------------- |
+| `GET`    | `/api/threads`                   | List threads known to the checkpointer    |
+| `DELETE` | `/api/threads/:threadId`         | Delete a thread's session and checkpoints |
+| `POST`   | `/api/threads/:threadId/history` | Paginated checkpoint history              |
 
 ### 3. Session and run management
 
