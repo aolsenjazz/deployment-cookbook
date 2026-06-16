@@ -25,7 +25,7 @@ export function ChatApp() {
   const initStarted = useRef(false);
   const agentId = getManagedAgentId();
   const agentIdError = getManagedAgentIdError();
-  // Stable LangGraph client bound to the hosted Managed Deep Agent.
+  // Stable streaming client bound to the hosted Managed Deep Agent.
   const client = useMemo(() => (agentId ? createStreamClient() : null), [agentId]);
 
   const refreshThreads = useCallback(async () => {

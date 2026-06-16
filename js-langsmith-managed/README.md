@@ -1,200 +1,302 @@
 # Deploying a LangChain Agent as a Managed Deep Agent
 
-A self-contained Vite + React chat demo backed by a **Managed Deep Agent** — a deep agent that [LangChain hosts for you](https://docs.langchain.com/langsmith/managed-deep-agents-overview) (currently in **private preview**). Instead of shipping a graph and running an Agent Server, you deploy a small **declarative project** (`managed-agent/`) — `agent.json`, `AGENTS.md`, and `subagents/` — with the `deepagents` CLI, and LangChain runs the agent.
+This example gets you from a local checkout to a hosted LangChain agent with a working chat UI. The agent runs as a **Managed Deep Agent**: you deploy instructions and configuration, and LangChain hosts the agent runtime for you.
 
-The UI in `src/` streams from the hosted agent through the [`@langchain/managed-deepagents`](https://www.npmjs.com/package/@langchain/managed-deepagents) SDK's LangGraph client adapter and `@langchain/react`'s `StreamProvider`.
+Use this page when you want the fastest path to a deployed agent. The setup has two parts:
 
-> [!NOTE]
-> **Managed Deep Agent vs. LangSmith Deployment.** This example deploys a **Managed Deep Agent** (LangChain hosts the agent; you deploy declarative files). Its sibling [`../js-langsmith`](../js-langsmith) deploys the **same agent** as a **LangSmith Deployment** (you define the graph in code and host it on the LangGraph Agent Server). A Managed Deep Agent is **not** a LangSmith Deployment.
->
-> | Use this example (Managed Deep Agent) when…                              | Use [`js-langsmith`](../js-langsmith) (LangSmith Deployment) when…          |
-> | ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-> | You want the least infrastructure — LangChain runs the agent for you.    | You want full control over the graph, runtime, checkpointer, and middleware. |
-> | Behavior fits instructions + skills + subagents, and tools are MCP servers. | You ship custom code tools and bespoke graph logic.                       |
-> | You have Managed Deep Agents private-preview access and want a hosted agent fast. | You're on LangGraph and want the standard Agent Server (`/threads`, `/runs`) API. |
+1. Deploy the Managed Deep Agent from `managed-agent/`.
+2. Run or deploy the React chat UI from `src/`.
 
-The deployed agent mirrors the deep agent used across this cookbook: a coordinator that delegates to `researcher` and `math-whiz` subagents.
+## Start Here
 
-## Architecture
+### What you are deploying
 
-```mermaid
-flowchart TB
-  subgraph vercel["Vercel (Vite build)"]
-    SPA["React SPA"]
-    SP["StreamProvider + useStreamContext"]
-    SPA --- SP
-  end
+A **Managed Deep Agent** is a hosted deep agent. You do not run a LangGraph Agent Server yourself. Instead, you deploy a small project made of files:
 
-  subgraph langchain["LangChain-hosted (Managed Deep Agents)"]
-    MDA["/v1/deepagents · hosted agent + subagents"]
-  end
+- `agent.json` names the agent, model, and backend.
+- `AGENTS.md` gives the agent its instructions.
+- `subagents/` defines specialist agents the coordinator can delegate to.
+- `tools.json` lists MCP-backed tools, if your agent needs tools.
 
-  SP -->|"@langchain/managed-deepagents<br/>getLangGraphClient()"| MDA
+This project deploys the same cookbook agent pattern used elsewhere in this repo: a coordinator delegates research tasks to `researcher`, math tasks to `math-whiz`, then combines the results.
 
-  subgraph local["managed-agent/ (deployed via deepagents CLI)"]
-    CFG["agent.json · AGENTS.md · tools.json · subagents/"]
-  end
+### How the pieces fit
 
-  CFG -.->|"pnpm run deploy"| MDA
-```
+The flow is simple:
 
-| Piece                      | Location         | Deploy target                                   |
-| -------------------------- | ---------------- | ----------------------------------------------- |
-| Managed Deep Agent project | `managed-agent/` | Managed Deep Agents (`pnpm run deploy`)         |
-| Chat UI                    | `src/`           | Vercel (`pnpm build` → `dist/`)                 |
+1. `pnpm run deploy` uploads `managed-agent/` to LangChain.
+2. LangChain creates or updates the hosted Managed Deep Agent.
+3. The React UI streams chat responses from that hosted agent.
 
-## Prerequisites
+Deploy the agent first because the UI needs the hosted agent's `agent_id`.
 
-- Managed Deep Agents [private-preview access](https://www.langchain.com/langsmith-managed-deep-agents-waitlist) (LangSmith Cloud, US region).
-- A [LangSmith API key](https://docs.langchain.com/langsmith/create-account-api-key) for a workspace with preview access, exported as `LANGSMITH_API_KEY`.
-- The `deepagents` CLI, version `0.2.2` or later:
+### What you need
+
+- Managed Deep Agents [private-preview access](https://www.langchain.com/langsmith-managed-deep-agents-waitlist) in LangSmith Cloud, US region.
+- A [LangSmith API key](https://docs.langchain.com/langsmith/create-account-api-key) for a workspace with that access.
+- `pnpm`.
+- The `deepagents` CLI, version `0.2.2` or later.
+
+Install or update the CLI:
 
 ```bash
 uv tool install "deepagents-cli>=0.2.2"
-# or: pip install -U "deepagents-cli>=0.2.2"
-deepagents --version   # confirm >= 0.2.2 (an older `deepagents` on PATH can shadow it)
+# or
+pip install -U "deepagents-cli>=0.2.2"
+
+deepagents --version
 ```
 
-## The Managed Deep Agent project (`managed-agent/`)
+If `deepagents --version` shows an older version, another `deepagents` executable may be earlier on your `PATH`.
 
-Deploy syncs every file in this directory to the hosted agent's managed file tree:
+## Deploy In 5 Steps
 
+### 1. Install dependencies
+
+```bash
+cd js-langsmith-managed
+pnpm install
 ```
+
+### 2. Create your local environment file
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set:
+
+```bash
+LANGSMITH_API_KEY=<your LangSmith API key>
+```
+
+This key is used by both the deploy command and the local demo UI.
+
+> [!WARNING]
+> The demo exposes `LANGSMITH_API_KEY` to the browser bundle so the UI can call the hosted agent directly. That is convenient for local testing, but not production-safe. For a real app, proxy requests through your own backend and keep the key server-side.
+
+### 3. Deploy the Managed Deep Agent
+
+```bash
+pnpm run deploy
+```
+
+This runs:
+
+```bash
+deepagents deploy --dir managed-agent
+```
+
+On the first successful deploy, the CLI creates the hosted agent and prints an `agent_id`, revision, agent URL, and MCP health check:
+
+```text
+Deployed: deployment-cookbook-coordinator
+  agent_id: 585b5f3c-3409-4923-b0ed-79b86a8425e8
+  revision: 7ca95573
+  https://smith.langchain.com/o/-/agents/585b5f3c-3409-4923-b0ed-79b86a8425e8
+  health:   {'agent_id': '585b5f3c-3409-4923-b0ed-79b86a8425e8', 'mcp_check': {'ok': True, 'servers': []}, 'checked_at': '2026-06-16T22:03:34.107200203Z'}
+```
+
+Save the `agent_id`; the UI needs it in the next step.
+
+To inspect what will be deployed before creating or updating the hosted agent, run:
+
+```bash
+deepagents deploy --dir managed-agent --dry-run
+```
+
+### 4. Point the UI at the deployed agent
+
+Add the `agent_id` from the deploy output to `.env`:
+
+```bash
+LANGSMITH_MANAGED_AGENT_ID=<agent_id from deploy>
+```
+
+Your `.env` should now contain:
+
+```bash
+LANGSMITH_API_KEY=<your LangSmith API key>
+LANGSMITH_MANAGED_AGENT_ID=<agent_id from deploy>
+```
+
+### 5. Run the chat UI
+
+```bash
+pnpm dev
+```
+
+Open the Vite dev server at [http://localhost:5173](http://localhost:5173). Try a prompt that uses both subagents:
+
+```text
+Research LangGraph streaming, and separately calculate 42 * 17.
+```
+
+If `LANGSMITH_MANAGED_AGENT_ID` is missing, the app shows a setup message instead of the chat.
+
+## Deploy The Frontend
+
+The agent is already hosted by LangChain after `pnpm run deploy`. Vercel only needs to host the static React app.
+
+1. Create a Vercel project from this repo.
+2. Set **Root Directory** to `js-langsmith-managed`.
+3. Use the default Vite build. The build output is `dist/`.
+4. Set these environment variables in Vercel:
+   - `LANGSMITH_MANAGED_AGENT_ID`: the deployed Managed Deep Agent id.
+   - `LANGSMITH_API_KEY`: the LangSmith API key used by the demo client.
+
+For production, replace the direct browser API-key flow with your own backend proxy before publishing to users.
+
+## Troubleshooting
+
+- `deepagents` is not found: install the CLI with `uv tool install "deepagents-cli>=0.2.2"` or `pip install -U "deepagents-cli>=0.2.2"`.
+- Deploy says you do not have access: confirm your LangSmith workspace has Managed Deep Agents private-preview access and that `LANGSMITH_API_KEY` belongs to that workspace.
+- The UI shows a configuration message: set `LANGSMITH_MANAGED_AGENT_ID` in `.env` and restart `pnpm dev`.
+- Past threads or generated titles are missing: this is expected in private preview for some Managed Deep Agents endpoints. Streaming chat still works.
+- You changed files in `managed-agent/` but the hosted agent did not change: run `pnpm run deploy` again.
+
+## Learn The Project
+
+### Managed Deep Agent files
+
+Deploy syncs every file in `managed-agent/` to the hosted agent's managed file tree:
+
+```text
 managed-agent/
-├── agent.json                       # name, model, backend
-├── AGENTS.md                        # coordinator instructions (system prompt)
-├── tools.json                       # MCP-backed tools (empty by default)
+├── agent.json
+├── AGENTS.md
+├── tools.json
 └── subagents/
     ├── researcher/
-    │   ├── agent.json               # description + model
-    │   └── AGENTS.md                # subagent instructions
+    │   ├── agent.json
+    │   └── AGENTS.md
     └── math-whiz/
         ├── agent.json
         └── AGENTS.md
 ```
 
-`agent.json` declares the model in `{provider}:{model_id}` form and the backend:
+The top-level `agent.json` declares the model in `{provider}:{model_id}` form and selects the backend:
 
 ```json
 {
   "name": "deployment-cookbook-coordinator",
+  "description": "Coordinator deep agent that delegates lookups to the researcher subagent and math to the math-whiz subagent, then combines their results into a short, labeled answer.",
   "model": "openai:gpt-5.4-mini",
-  "backend": { "type": "state" }
+  "backend": {
+    "type": "state"
+  }
 }
 ```
 
-See the [CLI project file reference](https://docs.langchain.com/langsmith/managed-deep-agents-cli#project-file-reference) for every field, and [Choose a backend](https://docs.langchain.com/langsmith/managed-deep-agents-deploy#choose-a-backend) for the `sandbox` option.
+See the [CLI project file reference](https://docs.langchain.com/langsmith/managed-deep-agents-cli#project-file-reference) for every supported field, and [Choose a backend](https://docs.langchain.com/langsmith/managed-deep-agents-deploy#choose-a-backend) for the `sandbox` backend option.
 
 ### Tools are MCP-backed
 
-A Managed Deep Agent can only call tools that come from a registered **MCP server** (it can't run local code tools like the LangGraph example's mock `search_web`/`calculator`). `tools.json` ships empty so the first deploy succeeds. To give the agent or a subagent real tools, [register an MCP server](https://docs.langchain.com/langsmith/managed-deep-agents-mcp) for the workspace, then add entries:
+Managed Deep Agents can only call tools from registered **MCP servers**. They cannot run local code tools like the LangGraph example's mock `search_web` or `calculator` functions.
+
+This project ships with an empty `tools.json` so the first deploy succeeds. To add tools, register an MCP server for your workspace, print its tool snippet, add that snippet to the right `tools.json`, and redeploy:
 
 ```bash
 deepagents mcp-servers add --url https://example.com/mcp --name my-tools
-deepagents mcp-servers tools my-tools   # prints a paste-ready tools.json snippet
+deepagents mcp-servers tools my-tools
 ```
+
+Example `tools.json`:
 
 ```json
 {
   "tools": [
-    { "name": "search_web", "mcp_server_url": "https://example.com/mcp", "mcp_server_name": "my-tools" }
+    {
+      "name": "search_web",
+      "mcp_server_url": "https://example.com/mcp",
+      "mcp_server_name": "my-tools"
+    }
   ]
 }
 ```
 
-Drop the snippet into `managed-agent/tools.json` (or `managed-agent/subagents/<name>/tools.json` for a subagent-scoped tool) and redeploy. Deploy validates referenced MCP server URLs before sending the request.
+Use `managed-agent/tools.json` for coordinator-level tools. Use `managed-agent/subagents/<name>/tools.json` for tools that should only be available to one subagent. Deploy validates referenced MCP server URLs before updating the hosted agent.
 
-## Deploy the agent
+### Chat UI
 
-```bash
-cd js-langsmith-managed
-cp .env.example .env          # set LANGSMITH_API_KEY
-export LANGSMITH_API_KEY=lsv2-...   # or rely on the project .env
-pnpm install
-pnpm run deploy               # → deepagents deploy --dir managed-agent
+The React app in `src/` talks to the hosted agent with [`@langchain/managed-deepagents`](https://www.npmjs.com/package/@langchain/managed-deepagents). It uses native Managed Deep Agents thread endpoints for the sidebar and `@langchain/react` for streaming chat.
+
+The UI builds a LangGraph-compatible client with:
+
+```ts
+new Client({ apiKey }).getLangGraphClient({ agentId });
 ```
 
-Preview the payload and managed file tree first with `deepagents deploy --dir managed-agent --dry-run`.
+The adapter keeps `@langchain/react` streaming compatible with the Managed Deep Agents `/v1/deepagents` routes. Thread listing, creation, and deletion use the Managed Deep Agents SDK client directly. The wiring lives in `src/lib/chat/threads-client.ts`.
 
-The first deploy **creates** the agent; later deploys **update** the same one (deploy state is tracked locally). On success the CLI prints the agent name, **`agent_id`**, revision, agent URL, and an MCP health check. **Save the `agent_id`** — the UI needs it.
-
-To deploy into a shared/known agent instead, set `"agent_id"` in `managed-agent/agent.json`. See [Update a shared agent](https://docs.langchain.com/langsmith/managed-deep-agents-deploy#update-a-shared-agent).
-
-## Run the chat UI against the hosted agent
-
-Managed Deep Agents are hosted-only — there's no local agent runtime, so the UI always streams from your **deployed** agent. Point the frontend at it:
-
-```bash
-# in .env
-LANGSMITH_MANAGED_AGENT_ID=<agent_id from deploy>
-LANGSMITH_API_KEY=lsv2-...                # the same key you deploy with
-```
-
-```bash
-pnpm dev                    # Vite dev server on http://localhost:5173
-# or build a production bundle:
-pnpm build && pnpm preview
-```
-
-The UI builds a LangGraph client with `new Client({ apiKey }).getLangGraphClient({ agentId })`, which rewrites thread and run requests onto the `/v1/deepagents` routes (see `src/lib/chat/threads-client.ts`). Until `LANGSMITH_MANAGED_AGENT_ID` is set, the app shows a short "deploy and configure" message instead of the chat.
-
-Both client vars use the `LANGSMITH_` prefix so a single `LANGSMITH_API_KEY` serves deploy **and** the browser client: Vite's `envPrefix` (in `vite.config.ts`) exposes `LANGSMITH_`-prefixed vars to the browser, so there's no separate `VITE_`-prefixed copy to keep in sync.
-
-> [!WARNING]
-> **API key in the browser.** Exposing `LANGSMITH_API_KEY` to the client ships your key in the built bundle — fine for a local demo, not for production. In a real app, proxy requests through your own backend with a custom `fetch` and never expose the key.
+Both client variables use the `LANGSMITH_` prefix. `vite.config.ts` exposes that prefix to the browser with `envPrefix`, so the demo does not need a duplicate `VITE_LANGSMITH_API_KEY`.
 
 > [!NOTE]
-> **Private-preview limitations.** The Managed Deep Agents API does not mirror every Agent Server endpoint yet. The thread-history sidebar is best-effort against a hosted agent (thread search/state may be unavailable), so past threads and derived titles can be empty. Streaming chat, subagents, and tool-call rendering work.
+> Managed Deep Agents are hosted-only. There is no local agent runtime for this example, so the UI always streams from a deployed agent.
 
-## Deploy the frontend to Vercel
+### Managed Deep Agent vs. LangSmith Deployment
 
-1. Connect the repo in Vercel with **Root Directory** `js-langsmith-managed`.
-2. Vercel auto-detects Vite — build output is `dist/`.
-3. Set environment variables:
-   - `LANGSMITH_MANAGED_AGENT_ID` — the deployed Managed Deep Agent id
-   - `LANGSMITH_API_KEY` — LangSmith API key (exposed to the build via `envPrefix`; preferably proxy through a backend instead)
+This example is a **Managed Deep Agent**. LangChain hosts the agent runtime, and you deploy declarative files from `managed-agent/`.
 
-The agent itself is redeployed with `pnpm run deploy` (or `deepagents deploy`) — there's no separate server to host.
+The sibling [`../js-langsmith`](../js-langsmith) example deploys the same agent as a **LangSmith Deployment**. In that version, you define the graph in code and run it on the LangGraph Agent Server.
 
-## Run from the CLI or SDK
+Use this example when you want the least infrastructure, your agent behavior fits instructions plus subagents, and your tools come from MCP servers. Use [`../js-langsmith`](../js-langsmith) when you need custom graph code, custom code tools, middleware, checkpointer control, or the standard Agent Server API surface.
 
-You don't need the UI to run the agent. Stream a response with the [TypeScript SDK](https://docs.langchain.com/langsmith/managed-deep-agents-sdk):
+### Private-preview limitations
+
+Managed Deep Agents are currently in private preview, and the API does not mirror every LangGraph Agent Server endpoint yet. This demo uses the Managed Deep Agents thread list endpoint for history, so titles may be empty when the API does not return one. Streaming chat, subagents, and tool-call rendering work.
+
+## Run From The SDK
+
+You do not need the UI to run the agent. Stream a response with the [TypeScript SDK](https://docs.langchain.com/langsmith/managed-deep-agents-sdk):
 
 ```ts
 import { Client } from "@langchain/managed-deepagents";
 
-const agentId = process.env.MANAGED_AGENT_ID!;
+const agentId = process.env.LANGSMITH_MANAGED_AGENT_ID!;
 const client = new Client({ apiKey: process.env.LANGSMITH_API_KEY });
 
 const thread = await client.threads.create({ agent_id: agentId });
 const lg = client.getLangGraphClient({ agentId });
 
 const stream = lg.runs.stream(thread.id, agentId, {
-  input: { messages: [{ role: "user", content: "Research LangGraph streaming, and separately calculate 42 * 17." }] },
+  input: {
+    messages: [
+      {
+        role: "user",
+        content:
+          "Research LangGraph streaming, and separately calculate 42 * 17.",
+      },
+    ],
+  },
   streamMode: ["values", "updates", "messages-tuple"],
   streamSubgraphs: true,
 });
 
-for await (const event of stream) console.log(event.event, event.data);
+for await (const event of stream) {
+  console.log(event.event, event.data);
+}
 ```
 
-## Project layout
+## Project Layout
 
-```
+```text
 js-langsmith-managed/
 ├── package.json
-├── managed-agent/         # Managed Deep Agent project (deployed via deepagents CLI)
-├── vite.config.ts
+├── managed-agent/         # Managed Deep Agent project
+├── vite.config.ts         # exposes LANGSMITH_* to the demo client
 ├── index.html
 ├── tsconfig*.json
-├── src/                   # Vite + React SPA
+├── src/                   # Vite + React chat UI
 └── .env.example
 ```
 
 ## References
 
-- [`js-langsmith`](../js-langsmith) — the same agent deployed as a LangSmith Deployment (LangGraph Agent Server)
 - [Deploy a Managed Deep Agent](https://docs.langchain.com/langsmith/managed-deep-agents-deploy)
-- [Managed Deep Agents overview](https://docs.langchain.com/langsmith/managed-deep-agents-overview) · [quickstart](https://docs.langchain.com/langsmith/managed-deep-agents-quickstart)
-- [Managed Deep Agents CLI reference](https://docs.langchain.com/langsmith/managed-deep-agents-cli) · [SDKs](https://docs.langchain.com/langsmith/managed-deep-agents-sdk)
-- [Connect tools (MCP)](https://docs.langchain.com/langsmith/managed-deep-agents-mcp)
+- [Managed Deep Agents overview](https://docs.langchain.com/langsmith/managed-deep-agents-overview)
+- [Managed Deep Agents quickstart](https://docs.langchain.com/langsmith/managed-deep-agents-quickstart)
+- [Managed Deep Agents CLI reference](https://docs.langchain.com/langsmith/managed-deep-agents-cli)
+- [Managed Deep Agents SDKs](https://docs.langchain.com/langsmith/managed-deep-agents-sdk)
+- [Connect tools with MCP](https://docs.langchain.com/langsmith/managed-deep-agents-mcp)
+- [`js-langsmith`](../js-langsmith) for the same agent as a LangSmith Deployment
