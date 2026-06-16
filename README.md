@@ -49,9 +49,9 @@ A browser UI wired to the protocol through `HttpAgentServerAdapter`, from [`@lan
 
 Each directory is a self-contained app with its own README, env setup, and deploy instructions.
 
-<table>
+<table width="100%">
   <tr>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="./js-langsmith">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v16/icons/langchaincorporate.svg" width="64" height="64" alt="LangSmith" />
         <br />
@@ -60,7 +60,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>Agent on LangSmith · UI on Vercel</sub>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="./js-cloudflare">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/cloudflare.svg" width="64" height="64" alt="Cloudflare" />
         <br />
@@ -69,7 +69,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>Vite + React · Durable Objects</sub>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="./js-next">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" width="64" height="64" alt="Next.js" />
         <br />
@@ -78,7 +78,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>App Router · <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY">Deploy to Vercel</a></sub>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="./js-deno">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/deno.svg" width="64" height="64" alt="Deno" />
         <br />
@@ -87,7 +87,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>Vite + React · Hono</sub>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="./js-nuxt">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/nuxtdotjs.svg" width="64" height="64" alt="Nuxt" />
         <br />
