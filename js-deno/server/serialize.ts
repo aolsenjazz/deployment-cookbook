@@ -6,6 +6,12 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 /**
  * Recursively replace LangChain message instances with plain protocol dicts.
+ *
+ * Uses {@link BaseMessage.isInstance} and {@link BaseMessage.toDict} from
+ * `@langchain/core/messages` — the canonical LangChain serialization primitive.
+ * Message instances surface in `values`/`updates` stream data and in the
+ * checkpointer state snapshot returned by the thread-state routes, often nested
+ * under `messages`.
  */
 export function sanitizeForJson(value: unknown): unknown {
   if (BaseMessage.isInstance(value)) {

@@ -1,13 +1,14 @@
 /**
  * Thread state helpers backed by the graph checkpointer.
  *
- * Ported from the streaming-cookbook `react-custom-backend` example. Implements
- * the LangGraph SDK thread state wire-shape consumed by `client.threads.getState`
- * / `updateState` (`GET|POST /threads/:id/state`) and `getHistory`
- * (`POST /threads/:id/history`), aligned with the Agent Protocol thread model.
+ * Implements the LangGraph SDK thread state wire-shape consumed by
+ * `client.threads.getState` / `updateState` (`GET|POST /threads/:id/state`) and
+ * `getHistory` (`POST /threads/:id/history`), aligned with the Agent Protocol
+ * thread model.
  */
 
-import type { CompiledGraphType, MemorySaver } from "@langchain/langgraph";
+import type { MemorySaver } from "@langchain/langgraph";
+import type { CompiledGraphType } from "@langchain/langgraph";
 import type { RunnableConfig } from "@langchain/core/runnables";
 
 import { isRecord, sanitizeForJson } from "./serialize";
@@ -25,8 +26,8 @@ type StateSnapshot = Awaited<ReturnType<LocalProtocolGraph["getState"]>>;
 /**
  * Raised when a thread has no checkpoint yet.
  *
- * Mapped to HTTP 404 so the LangGraph SDK can bootstrap the thread via
- * `POST /threads/:id/state` before the first run.
+ * The route handlers map this to HTTP 404 so the LangGraph SDK can bootstrap
+ * the thread via `POST /threads/:id/state` before the first run.
  */
 export class ThreadNotFoundError extends Error {
   readonly threadId: string;
@@ -48,9 +49,12 @@ const INITIAL_UPDATE_NODE = "__start__";
 
 /**
  * Default graph node for non-empty state updates on an existing checkpoint.
+ *
+ * Matches the agent's model node when the client omits `as_node`.
  */
 const DEFAULT_UPDATE_NODE = "model_request";
 
+/** Build the {@link RunnableConfig} that scopes graph calls to a thread id. */
 function threadConfig(threadId: string): RunnableConfig {
   return { configurable: { thread_id: threadId } };
 }
@@ -61,7 +65,7 @@ function threadConfig(threadId: string): RunnableConfig {
  */
 function historyConfig(
   threadId: string,
-  checkpoint?: Record<string, unknown> | null,
+  checkpoint?: Record<string, unknown> | null
 ): RunnableConfig {
   const configurable: Record<string, unknown> = {
     thread_id: threadId,
@@ -73,6 +77,7 @@ function historyConfig(
   return { configurable };
 }
 
+/** Read the `configurable` bag from a LangGraph run config. */
 function configurableOf(config: RunnableConfig): Record<string, unknown> {
   return isRecord(config.configurable) ? config.configurable : {};
 }
@@ -102,7 +107,7 @@ function serializeTaskError(error: unknown): string | null {
 /** Map a LangGraph run config to the SDK checkpoint wire shape. */
 function runnableConfigToCheckpoint(
   config: RunnableConfig | null | undefined,
-  fallbackThreadId?: string,
+  fallbackThreadId?: string
 ): Record<string, unknown> | null {
   if (!config || !isRecord(config.configurable)) return null;
   const c = config.configurable;
@@ -119,7 +124,7 @@ function runnableConfigToCheckpoint(
 }
 
 function taskCheckpointFromState(
-  state: unknown,
+  state: unknown
 ): Record<string, unknown> | null {
   if (state == null || !isRecord(state) || !isRecord(state.configurable)) {
     return null;
@@ -143,7 +148,7 @@ function taskCheckpointFromState(
  */
 export function serializeThreadState(
   snapshot: StateSnapshot,
-  threadId: string,
+  threadId: string
 ): Record<string, unknown> {
   const configurable = configurableOf(snapshot.config);
   const checkpoint = runnableConfigToCheckpoint(snapshot.config, threadId) ?? {
@@ -222,7 +227,7 @@ function deriveTitle(values: unknown): string {
               .map((block) =>
                 isRecord(block) && typeof block.text === "string"
                   ? block.text
-                  : "",
+                  : ""
               )
               .join("")
           : "";
@@ -241,7 +246,7 @@ function deriveTitle(values: unknown): string {
  */
 export async function listThreads(
   graph: LocalProtocolGraph,
-  checkpointer: MemorySaver,
+  checkpointer: MemorySaver
 ): Promise<ThreadSummary[]> {
   const ids = Object.keys(checkpointer.storage);
   const summaries: ThreadSummary[] = [];
@@ -269,7 +274,7 @@ export async function listThreads(
  */
 export async function getThreadState(
   graph: LocalProtocolGraph,
-  threadId: string,
+  threadId: string
 ): Promise<Record<string, unknown>> {
   const snapshot = await graph.getState(threadConfig(threadId));
   if (!threadHasCheckpoint(snapshot)) throw new ThreadNotFoundError(threadId);
@@ -281,7 +286,7 @@ export async function getThreadState(
  */
 function parseBeforeCursor(
   threadId: string,
-  before: unknown,
+  before: unknown
 ): RunnableConfig | undefined {
   if (before == null) return undefined;
   if (typeof before === "string") {
@@ -321,7 +326,7 @@ export async function getThreadHistory(
     before?: unknown;
     metadata?: Record<string, unknown>;
     checkpoint?: Record<string, unknown> | null;
-  } = {},
+  } = {}
 ): Promise<Record<string, unknown>[]> {
   await getThreadState(graph, threadId);
 
@@ -337,9 +342,7 @@ export async function getThreadHistory(
   return history;
 }
 
-/**
- * Choose which graph node should receive a `updateState` write.
- */
+/** Choose which graph node should receive an `updateState` write. */
 function resolveUpdateNode(options: {
   asNode?: string;
   values: Record<string, unknown> | null;
@@ -368,7 +371,7 @@ export async function updateThreadState(
     values?: Record<string, unknown> | null;
     checkpoint?: Record<string, unknown> | null;
     asNode?: string;
-  } = {},
+  } = {}
 ): Promise<Record<string, unknown>> {
   let config = threadConfig(threadId);
   const checkpoint = options.checkpoint;

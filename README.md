@@ -88,6 +88,17 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <sub>Vue · Nitro server</sub>
     </td>
   </tr>
+  <tr>
+    <td align="center" width="25%">
+      <a href="./js-langsmith">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v16/icons/langchaincorporate.svg" width="64" height="64" alt="LangSmith" />
+        <br />
+        <strong>LangSmith + Vite</strong>
+      </a>
+      <br />
+      <sub>Agent on LangSmith · UI on Vercel</sub>
+    </td>
+  </tr>
 </table>
 
 All examples share the same demo agent: a coordinator that delegates to `researcher` and `math-whiz` subagents with mock tools, so you can compare hosting choices without changing application behavior.

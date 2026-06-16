@@ -8,7 +8,7 @@
 
 import type { SubscribeParams } from "@langchain/protocol";
 
-import { getThreadSession } from "../../../utils/runtime";
+import { getSession } from "../../../utils/runtime";
 
 export default defineEventHandler(async (event) => {
   const threadId = getRouterParam(event, "threadId") ?? "local";
@@ -20,5 +20,5 @@ export default defineEventHandler(async (event) => {
   // Disable proxy buffering so SSE frames flush immediately.
   setResponseHeader(event, "x-accel-buffering", "no");
 
-  return getThreadSession(threadId).stream(params);
+  return getSession(threadId).stream(params);
 });

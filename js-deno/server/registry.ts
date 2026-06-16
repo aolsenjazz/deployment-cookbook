@@ -1,24 +1,29 @@
-/**
- * Process-local registry for the agent and its per-thread sessions.
- *
- * Under Deno Deploy each isolate keeps its own in-memory registry. For
- * production, swap the checkpointer in `server/agent/index.ts` for a durable
- * backend and use a shared session/replay store.
- */
-
 import { agent, checkpointer } from "./agent/index.ts";
 import { LocalThreadSession } from "./session.ts";
 
+/**
+ * Process-local registry for the agent and its per-thread sessions.
+ *
+ * Under Deno Deploy each isolate keeps its own in-memory registry.
+ *
+ * NOTE: This is in-memory and process-local. A serverless/multi-instance
+ * deployment needs a durable checkpointer (Postgres, SQLite, …) and a shared
+ * session/replay store. The wiring here stays the same; only the checkpointer
+ * in `server/agent/index.ts` and this store change.
+ */
 const sessions = new Map<string, LocalThreadSession>();
 
+/** The shared, compiled agent (and its checkpointer). */
 export function getAgent() {
   return agent;
 }
 
+/** The shared checkpointer — the single source of truth for threads. */
 export function getCheckpointer() {
   return checkpointer;
 }
 
+/** Get or create the process-local session for a thread. */
 export function getSession(threadId: string): LocalThreadSession {
   let session = sessions.get(threadId);
   if (session == null) {
@@ -28,6 +33,7 @@ export function getSession(threadId: string): LocalThreadSession {
   return session;
 }
 
+/** Delete a thread: remove its session and its checkpointed state. */
 export async function deleteThread(threadId: string): Promise<void> {
   sessions.delete(threadId);
   await checkpointer.deleteThread(threadId);

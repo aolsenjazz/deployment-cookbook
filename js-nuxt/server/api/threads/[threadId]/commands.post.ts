@@ -7,10 +7,10 @@
 
 import type { Command } from "@langchain/protocol";
 
-import { getThreadSession } from "../../../utils/runtime";
+import { getSession } from "../../../utils/runtime";
 
 export default defineEventHandler(async (event) => {
   const threadId = getRouterParam(event, "threadId") ?? "local";
   const command = await readBody<Command>(event);
-  return getThreadSession(threadId).handleCommand(command);
+  return getSession(threadId).handleCommand(command);
 });
