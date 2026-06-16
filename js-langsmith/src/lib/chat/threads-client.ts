@@ -22,7 +22,7 @@ export function getAgentApiUrl(): string {
 }
 
 export function getApiKey(): string | undefined {
-  return import.meta.env.VITE_LANGSMITH_API_KEY?.trim() || undefined;
+  return import.meta.env.LANGSMITH_API_KEY?.trim() || undefined;
 }
 
 function getClient(): Client {

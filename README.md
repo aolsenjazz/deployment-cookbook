@@ -51,16 +51,25 @@ Each directory is a self-contained app with its own README, env setup, and deplo
 
 <table width="100%">
   <tr>
-    <td align="center" width="20%">
+    <td align="center" width="33%">
       <a href="./js-langsmith">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v16/icons/langchaincorporate.svg" width="64" height="64" alt="LangSmith" />
         <br />
-        <strong>LangSmith + Vite</strong>
+        <strong>LangSmith Deployment</strong>
       </a>
       <br />
-      <sub>Agent on LangSmith · UI on Vercel</sub>
+      <sub>LangGraph Agent Server · UI on Vercel</sub>
     </td>
-    <td align="center" width="20%">
+    <td align="center" width="33%">
+      <a href="./js-langsmith-managed">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v16/icons/langchaincorporate.svg" width="64" height="64" alt="LangSmith" />
+        <br />
+        <strong>Managed Deep Agent</strong>
+      </a>
+      <br />
+      <sub>Hosted by LangChain · private preview</sub>
+    </td>
+    <td align="center" width="33%">
       <a href="./js-cloudflare">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/cloudflare.svg" width="64" height="64" alt="Cloudflare" />
         <br />
@@ -69,7 +78,9 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>Vite + React · Durable Objects</sub>
     </td>
-    <td align="center" width="20%">
+  </tr>
+  <tr>
+    <td align="center" width="33%">
       <a href="./js-next">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" width="64" height="64" alt="Next.js" />
         <br />
@@ -78,7 +89,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>App Router · <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY">Deploy to Vercel</a></sub>
     </td>
-    <td align="center" width="20%">
+    <td align="center" width="33%">
       <a href="./js-deno">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/deno.svg" width="64" height="64" alt="Deno" />
         <br />
@@ -87,7 +98,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>Vite + React · Hono</sub>
     </td>
-    <td align="center" width="20%">
+    <td align="center" width="33%">
       <a href="./js-nuxt">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/nuxtdotjs.svg" width="64" height="64" alt="Nuxt" />
         <br />
@@ -99,7 +110,7 @@ Each directory is a self-contained app with its own README, env setup, and deplo
   </tr>
 </table>
 
-All examples share the same demo agent: a coordinator that delegates to `researcher` and `math-whiz` subagents with mock tools, so you can compare hosting choices without changing application behavior.
+All examples share the same demo agent: a coordinator that delegates to `researcher` and `math-whiz` subagents with mock tools, so you can compare hosting choices without changing application behavior. Two of them target LangSmith specifically: [`js-langsmith`](./js-langsmith) hosts the agent graph on the **LangGraph Agent Server** (you own the runtime), while [`js-langsmith-managed`](./js-langsmith-managed) deploys the same coordinator as a fully **Managed Deep Agent** (LangChain hosts it; tools become MCP servers).
 
 ## References
 

@@ -2,7 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_AGENT_API_URL?: string;
-  readonly VITE_LANGSMITH_API_KEY?: string;
+  // Exposed to the client via `envPrefix` in vite.config.ts (shared with deploy).
+  readonly LANGSMITH_API_KEY?: string;
 }
 
 interface ImportMeta {
