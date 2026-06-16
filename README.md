@@ -52,13 +52,13 @@ Each directory is a self-contained app with its own README, env setup, and deplo
 <table>
   <tr>
     <td align="center" width="25%">
-      <a href="./js-next">
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" width="64" height="64" alt="Next.js" />
+      <a href="./js-langsmith">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v16/icons/langchaincorporate.svg" width="64" height="64" alt="LangSmith" />
         <br />
-        <strong>Next.js</strong>
+        <strong>LangSmith + Vite</strong>
       </a>
       <br />
-      <sub>App Router · <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY">Deploy to Vercel</a></sub>
+      <sub>Agent on LangSmith · UI on Vercel</sub>
     </td>
     <td align="center" width="25%">
       <a href="./js-cloudflare">
@@ -68,6 +68,15 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       </a>
       <br />
       <sub>Vite + React · Durable Objects</sub>
+    </td>
+    <td align="center" width="25%">
+      <a href="./js-next">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" width="64" height="64" alt="Next.js" />
+        <br />
+        <strong>Next.js</strong>
+      </a>
+      <br />
+      <sub>App Router · <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY">Deploy to Vercel</a></sub>
     </td>
     <td align="center" width="25%">
       <a href="./js-deno">
@@ -86,17 +95,6 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       </a>
       <br />
       <sub>Vue · Nitro server</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="25%">
-      <a href="./js-langsmith">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v16/icons/langchaincorporate.svg" width="64" height="64" alt="LangSmith" />
-        <br />
-        <strong>LangSmith + Vite</strong>
-      </a>
-      <br />
-      <sub>Agent on LangSmith · UI on Vercel</sub>
     </td>
   </tr>
 </table>
