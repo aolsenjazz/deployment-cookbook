@@ -1,15 +1,15 @@
 {
-  "name": "js-cloudflare",
+  "name": "js-sveltekit",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite dev",
+    "build": "vite build && node scripts/export-durable-objects.mjs",
     "preview": "vite preview",
     "deploy": "pnpm build && wrangler deploy",
-    "typecheck": "tsc -b --noEmit",
-    "lint": "eslint ."
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "typecheck": "pnpm check"
   },
   "dependencies": {
     "@langchain/core": "1.1.48",
@@ -17,22 +17,19 @@
     "@langchain/langgraph-sdk": "^1.9.20",
     "@langchain/openai": "^1.4.7",
     "@langchain/protocol": "^0.0.16",
-    "@langchain/react": "^1.0.20",
+    "@langchain/svelte": "^1.0.23",
     "deepagents": "^1.10.2",
-    "hono": "^4.11.4",
     "langchain": "^1.4.4",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.7.0",
     "@cloudflare/workers-types": "^4.20250613.0",
+    "@sveltejs/adapter-cloudflare": "^7.2.9",
+    "@sveltejs/kit": "^2.65.2",
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tailwindcss/vite": "^4.1.11",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^5.1.0",
-    "eslint": "^9",
+    "svelte": "^5.56.3",
+    "svelte-check": "^4.3.4",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^7.1.12",
@@ -41,7 +38,9 @@
   "pnpm": {
     "overrides": {
       "@langchain/core": "1.1.50-dev-1781580357424",
-      "@langchain/langgraph-sdk": "https://pkg.pr.new/langchain-ai/langgraphjs/@langchain/langgraph-sdk@a6033c7"
+      "@langchain/langgraph-sdk": "https://pkg.pr.new/langchain-ai/langgraphjs/@langchain/langgraph-sdk@a6033c7",
+      "@langchain/svelte": "https://pkg.pr.new/langchain-ai/langgraphjs/@langchain/svelte@a6033c7",
+      "ws": "^8.21.0"
     }
   },
   "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"

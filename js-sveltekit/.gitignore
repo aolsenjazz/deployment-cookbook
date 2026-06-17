@@ -1,0 +1,14 @@
+.DS_Store
+node_modules
+.svelte-kit
+.wrangler
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+credentials.json
+token.json
+dist
+build

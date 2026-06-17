@@ -69,8 +69,6 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       <br />
       <sub>Vite + React · Durable Objects</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" width="33%">
       <a href="./js-next">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" width="64" height="64" alt="Next.js" />
@@ -79,6 +77,17 @@ Each directory is a self-contained app with its own README, env setup, and deplo
       </a>
       <br />
       <sub>App Router · <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY">Deploy to Vercel</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <a href="./js-sveltekit">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/svelte.svg" width="64" height="64" alt="SvelteKit" />
+        <br />
+        <strong>SvelteKit</strong>
+      </a>
+      <br />
+      <sub>Svelte · Cloudflare adapter</sub>
     </td>
     <td align="center" width="33%">
       <a href="./js-deno">
