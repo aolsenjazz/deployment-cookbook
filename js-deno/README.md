@@ -14,13 +14,41 @@ It is a port of the Next.js [`js-next`](../js-next) example into Deno + Hono, sh
 6. Add `OPENAI_API_KEY` in project environment variables.
 7. Deploy.
 
-Alternatively, use the Deno Deploy CLI after building the client locally:
+With the dashboard (GitHub-connected) flow above, Deno's build environment runs the build command, so `dist/` is generated in the cloud and never needs to be committed.
+
+Alternatively, use the built-in `deno deploy` CLI (Deno 2.x). The `deploy` block in
+[`deno.json`](./deno.json) sets `org`/`app` — change those to your own (or pass `--org`/`--app`
+flags, which override them).
 
 ```bash
 cd js-deno
-deno task build:client
-deployctl deploy --project=your-project main.ts
+
+# First time only: create the app. --source local uploads from your machine
+# (vs. github for a git-linked app); --region is one of us, eu, global.
+deno deploy create --org <your-org> --app <your-app> --source local --region us --entrypoint main.ts
+
+# Set your OpenAI key (or use the dashboard / `deno deploy env load .env`)
+deno deploy env add OPENAI_API_KEY <your-key> --org <your-org> --app <your-app>
+
+# Build the client, deploy to production, and clean up dist/ — all in one step.
+deno task deploy
 ```
+
+`deno task deploy` runs `deno task build:client && deno deploy --prod`, then `rm -rf dist`. Building
+locally is required because `deno deploy --source local` uploads your working tree (minus `.gitignore`)
+and does **not** run build commands — those only run for GitHub-connected apps. Removing `dist/`
+afterward keeps it out of `git status`. Two gotchas specific to the CLI `--source local` flow:
+
+- **`dist/` must not be gitignored.** The uploader respects `.gitignore`, so the freshly built `dist/`
+  must be visible during the upload window or every non-`/api` route returns **404**. The repo-root
+  `.gitignore` ignores all `dist`, so [`js-deno/.gitignore`](./.gitignore) re-includes it with `!dist/`
+  and `!dist/**`. The `deno task deploy` flow deletes `dist/` after uploading, so it doesn't linger in
+  `git status` despite not being ignored.
+- **Do not use a `deploy.include` list.** There is a Deno Deploy bug where adding `include` makes the
+  build resolve the entrypoint to `src/main.ts` and fail. Rely on the default `.gitignore`-based upload
+  instead.
+
+> Note: the older standalone `deployctl` tool is superseded by the built-in `deno deploy` subcommand.
 
 Optionally enable LangSmith tracing by adding the variables from [`.env.example`](./.env.example).
 

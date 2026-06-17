@@ -1,4 +1,9 @@
-dist/
+# dist/ is the locally built SPA. The `deno task deploy` flow builds it, uploads it
+# via `deno deploy --source local`, then deletes it again, so it normally doesn't exist
+# in your working tree. It must NOT be gitignored during that upload window (the uploader
+# respects .gitignore), so we re-include it here (the repo-root .gitignore ignores all `dist`).
+!dist/
+!dist/**
 client/node_modules/
 node_modules/
 .env

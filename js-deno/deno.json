@@ -6,15 +6,19 @@
   "tasks": {
     "dev": "deno run --watch --allow-env --allow-net --allow-read --allow-sys main.ts",
     "start": "deno run --allow-env --allow-net --allow-read --allow-sys main.ts",
-    "build:client": "cd client && pnpm install && pnpm build"
+    "build:client": "cd client && pnpm install && pnpm build",
+    "deploy": "deno task build:client && deno deploy --prod ; rm -rf dist"
   },
   "nodeModulesDir": "auto",
   "deploy": {
-    "entrypoint": "main.ts",
-    "include": [
-      "main.ts",
-      "server/",
-      "dist/"
-    ]
+    "org": "christian-bromann",
+    "app": "js-deno"
   }
 }
+
+
+
+
+
+
+
