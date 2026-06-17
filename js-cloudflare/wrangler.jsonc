@@ -16,6 +16,11 @@
       }
     ]
   },
+  "observability": {
+    "logs": {
+      "enabled": true
+    }
+  },
   "migrations": [
     {
       "tag": "v1",
