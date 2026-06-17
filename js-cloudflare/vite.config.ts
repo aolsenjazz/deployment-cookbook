@@ -8,9 +8,19 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react(), tailwindcss(), cloudflare()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-    },
+    alias: [
+      {
+        find: /^@langchain\/langgraph$/,
+        replacement: path.resolve(
+          __dirname,
+          "node_modules/@langchain/langgraph/dist/index.js"
+        ),
+      },
+      {
+        find: "@",
+        replacement: path.resolve(__dirname, "src"),
+      },
+    ],
   },
   environments: {
     js_cloudflare: {
@@ -19,7 +29,12 @@ export default defineConfig({
         // LangGraph's node entry for the Worker bundle so DeepAgents' task tool
         // can read AsyncLocalStorage-backed runtime config.
         conditions: ["module", "node", "production"],
-        noExternal: ["@langchain/langgraph", "deepagents", "langchain"],
+        noExternal: [
+          "@langchain/core",
+          "@langchain/langgraph",
+          "deepagents",
+          "langchain",
+        ],
       },
     },
   },
