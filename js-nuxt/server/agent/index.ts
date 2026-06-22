@@ -30,7 +30,6 @@ import { MemorySaver } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import { createDeepAgent } from "deepagents";
 
-import { stripReasoningReplay } from "./middleware";
 import { calculator, searchWeb } from "./tools";
 
 const coordinatorModel = new ChatOpenAI({
@@ -52,7 +51,6 @@ export const checkpointer = new MemorySaver();
 
 export const agent = createDeepAgent({
   model: coordinatorModel,
-  middleware: [stripReasoningReplay],
   checkpointer,
   subagents: [
     {
