@@ -1,4 +1,5 @@
 import { tool } from "langchain";
+import { evaluate } from "mathjs";
 import { z } from "zod";
 
 export const searchWeb = tool(
@@ -22,14 +23,15 @@ export const searchWeb = tool(
   }
 );
 
+// mathjs parses and evaluates without dynamic code generation, so it is safe
+// on the Cloudflare Workers runtime (which disallows new Function / eval).
 function evaluateExpression(expression: string): number {
-  if (!/^[\d+\-*/().\s]+$/.test(expression)) {
-    throw new Error("Only basic arithmetic is supported.");
-  }
-  const compute = new Function(
-    `"use strict"; return (${expression});`
-  ) as () => unknown;
-  const result = compute();
+  const normalized = expression
+    .replace(/[×✕✖]/g, "*")
+    .replace(/[÷]/g, "/")
+    .replace(/[−–—]/g, "-");
+
+  const result = evaluate(normalized);
   if (typeof result !== "number" || !Number.isFinite(result)) {
     throw new Error("Expression did not evaluate to a finite number.");
   }
