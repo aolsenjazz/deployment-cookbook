@@ -397,24 +397,6 @@ packages:
     peerDependencies:
       '@langchain/core': ^1.1.48
 
-  '@langchain/langgraph-sdk@1.9.23':
-    resolution: {integrity: sha512-JF5TWOrrKaMn9D7O0xT/9e9t3CpDRd8DUyKQdcbGswDsWdlI+04E9E1Lxv361tMu5pNYhval3iJPAwGxUuqi4w==}
-    peerDependencies:
-      '@langchain/core': ^1.1.48
-      react: ^18 || ^19
-      react-dom: ^18 || ^19
-      svelte: ^4.0.0 || ^5.0.0
-      vue: ^3.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
-
   '@langchain/langgraph-sdk@1.9.24':
     resolution: {integrity: sha512-WhM6QdxNipndQjl5nkvqnBt9Wl16oO2p0KiVhndAFLJMwO3bZLEx++lwtbqUFQu1sHyNxiWixgRGm8qZsuHCeA==}
     peerDependencies:
@@ -1031,7 +1013,7 @@ packages:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
   deepagents@https://pkg.pr.new/deepagents@8ec2941:
-    resolution: {tarball: https://pkg.pr.new/deepagents@8ec2941}
+    resolution: {integrity: sha512-SZDSY6P9K9LCjLqJFEPAElz/HMn4oETzllgZco066zWLCXD5E4vtYhsj94tW/xATIYfVVpFCsC9u1GFPDPz5Mw==, tarball: https://pkg.pr.new/deepagents@8ec2941}
     version: 1.10.5
     peerDependencies:
       '@langchain/core': ^1.2.0
@@ -2490,17 +2472,6 @@ snapshots:
     dependencies:
       '@langchain/core': 1.2.1(openai@6.42.0(zod@4.4.3))
 
-  '@langchain/langgraph-sdk@1.9.23(@langchain/core@1.2.1(openai@6.42.0(zod@4.4.3)))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@langchain/core': 1.2.1(openai@6.42.0(zod@4.4.3))
-      '@langchain/protocol': 0.0.16
-      '@types/json-schema': 7.0.15
-      p-queue: 9.3.0
-      p-retry: 7.1.1
-    optionalDependencies:
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-
   '@langchain/langgraph-sdk@1.9.24(@langchain/core@1.2.1(openai@6.42.0(zod@4.4.3)))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@langchain/core': 1.2.1(openai@6.42.0(zod@4.4.3))
@@ -2516,7 +2487,7 @@ snapshots:
     dependencies:
       '@langchain/core': 1.2.1(openai@6.42.0(zod@4.4.3))
       '@langchain/langgraph-checkpoint': 1.1.2(@langchain/core@1.2.1(openai@6.42.0(zod@4.4.3)))
-      '@langchain/langgraph-sdk': 1.9.23(@langchain/core@1.2.1(openai@6.42.0(zod@4.4.3)))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@langchain/langgraph-sdk': 1.9.24(@langchain/core@1.2.1(openai@6.42.0(zod@4.4.3)))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@langchain/protocol': 0.0.16
       '@standard-schema/spec': 1.1.0
       zod: 4.4.3
