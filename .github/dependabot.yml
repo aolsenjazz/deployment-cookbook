@@ -1,0 +1,120 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/js-cloudflare"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  - package-ecosystem: "npm"
+    directory: "/js-deno/client"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  - package-ecosystem: "npm"
+    directory: "/js-langsmith"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  - package-ecosystem: "npm"
+    directory: "/js-next"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  - package-ecosystem: "npm"
+    directory: "/js-nuxt"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  - package-ecosystem: "npm"
+    directory: "/js-sveltekit"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"

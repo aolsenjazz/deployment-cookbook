@@ -245,14 +245,23 @@ pnpm preview
 
 ### CI/CD
 
-The agent deploys via GitHub Actions when files under `js-langsmith/agent/` or shared config files change:
+Once you can deploy from your machine, you can move the same `langgraphjs deploy`
+step into GitHub Actions so a deploy is one click instead of a local command.
+This repo ships an example workflow you can copy into your own project:
+[`.github/workflows/deploy-agent.yml`](../.github/workflows/deploy-agent.yml).
 
-- Workflow: [`.github/workflows/deploy-langsmith-agent.yml`](../.github/workflows/deploy-langsmith-agent.yml)
-- Action: `langgraphjs deploy` to LangSmith.
-- Required secret: `LANGSMITH_API_KEY`.
-- Optional variable: `LANGSMITH_DEPLOYMENT_NAME`.
+To run a deploy from CI:
 
-The frontend deploys through Vercel's Git integration.
+1. Add your `LANGSMITH_API_KEY` as a secret (and optionally
+   `LANGSMITH_DEPLOYMENT_NAME` as a variable) in your repository. The example
+   workflow reads them from a GitHub Environment named `js-langsmith`, so each
+   target keeps its own credentials.
+2. Open the **Actions** tab, choose **Deploy Agent**, and run it (or use
+   `gh workflow run deploy-agent.yml`).
+3. Pick `js-langsmith` from the **project** dropdown. The workflow installs
+   dependencies and runs `langgraphjs deploy`.
+
+The frontend deploys separately through Vercel's Git integration.
 
 ### LangSmith Deployment vs. Managed Deep Agent
 

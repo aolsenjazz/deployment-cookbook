@@ -1,0 +1,87 @@
+name: Deploy Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Which example to deploy
+        type: choice
+        required: true
+        default: js-langsmith
+        options:
+          - js-langsmith
+          - js-cloudflare
+          - js-sveltekit
+          - js-deno
+          - js-next
+          - js-nuxt
+
+concurrency:
+  group: deploy-agent-${{ inputs.project }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Scope secrets/vars per platform. Define a GitHub Environment named after
+    # each project (js-cloudflare, js-next, …) and put its deploy credentials there.
+    environment: ${{ inputs.project }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.project }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 11
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: "**/pnpm-lock.yaml"
+
+      - name: Setup Deno
+        if: inputs.project == 'js-deno'
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        if: inputs.project != 'js-deno'
+        run: pnpm install --frozen-lockfile
+
+      # --- platform-specific deploy ---
+
+      - name: Deploy to LangSmith (LangGraph Agent Server)
+        if: inputs.project == 'js-langsmith'
+        run: pnpm exec langgraphjs deploy --no-wait
+        env:
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_DEPLOYMENT_NAME: ${{ vars.LANGSMITH_DEPLOYMENT_NAME }}
+          LANGSMITH_TENANT_ID: ${{ vars.LANGSMITH_TENANT_ID }}
+
+      - name: Deploy to Cloudflare Workers
+        if: inputs.project == 'js-cloudflare' || inputs.project == 'js-sveltekit'
+        run: pnpm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to Deno Deploy
+        if: inputs.project == 'js-deno'
+        run: deno task deploy
+        env:
+          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
+
+      - name: Deploy to Vercel
+        if: inputs.project == 'js-next' || inputs.project == 'js-nuxt'
+        run: |
+          pnpm dlx vercel@latest pull --yes --environment=production --token "$VERCEL_TOKEN"
+          pnpm dlx vercel@latest build --prod --token "$VERCEL_TOKEN"
+          pnpm dlx vercel@latest deploy --prebuilt --prod --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
