@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy --config dist/js_cloudflare/wrangler.json",
+    "deploy": "wrangler deploy --config dist/js_cloudflare/wrangler.json",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint ."
   },
