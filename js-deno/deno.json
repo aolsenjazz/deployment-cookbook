@@ -7,8 +7,8 @@
     "strict": true
   },
   "tasks": {
-    "dev": "deno run --watch --allow-env --allow-net --allow-read --allow-sys main.ts",
-    "start": "deno run --allow-env --allow-net --allow-read --allow-sys main.ts",
+    "dev": "deno run --watch --env-file --allow-env --allow-net --allow-read --allow-sys main.ts",
+    "start": "deno run --env-file --allow-env --allow-net --allow-read --allow-sys main.ts",
     "build:client": "cd client && npm install && npm run build",
     "deploy": "deno task build:client && deno deploy --prod ; rm -rf dist"
   },
