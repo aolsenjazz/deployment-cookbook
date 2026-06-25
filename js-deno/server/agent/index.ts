@@ -1,15 +1,8 @@
 import { MemorySaver } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
 import { createDeepAgent } from "deepagents";
 
+import { coordinatorModel, subagentModel } from "./model.ts";
 import { calculator, searchWeb } from "./tools.ts";
-
-const coordinatorModel = new ChatOpenAI({
-  model: "gpt-5.4-mini",
-  reasoning: { effort: "low", summary: "auto" },
-});
-
-const subagentModel = new ChatOpenAI({ model: "gpt-5.4-mini" });
 
 /**
  * In-memory checkpointer — the single source of truth for threads.

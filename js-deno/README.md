@@ -11,7 +11,7 @@ It is a port of the Next.js [`js-next`](../js-next) example into Deno + Hono, sh
 3. Set **Root Directory** to `js-deno`.
 4. Set the **build command** to `deno task build:client` (builds the Vite SPA into `dist/`).
 5. Set the **entrypoint** to `main.ts`.
-6. Add `OPENAI_API_KEY` in project environment variables.
+6. Add your provider's API key in project environment variables.
 7. Deploy.
 
 With the dashboard (GitHub-connected) flow above, Deno's build environment runs the build command, so `dist/` is generated in the cloud and never needs to be committed.
@@ -27,7 +27,7 @@ cd js-deno
 # (vs. github for a git-linked app); --region is one of us, eu, global.
 deno deploy create --org <your-org> --app <your-app> --source local --region us --entrypoint main.ts
 
-# Set your OpenAI key (or use the dashboard / `deno deploy env load .env`)
+# Set your provider's API key (or use the dashboard / `deno deploy env load .env`)
 deno deploy env add OPENAI_API_KEY <your-key> --org <your-org> --app <your-app>
 
 # Build the client, deploy to production, and clean up dist/ — all in one step.
@@ -131,10 +131,10 @@ Replace `MemorySaver` in `server/agent/index.ts` with a durable checkpointer suc
 
 ## Local development
 
-You need [Deno](https://deno.com/) 2.x and [pnpm](https://pnpm.io/) for the client.
+You need [Deno](https://deno.com/) 2.x and [Node.js](https://nodejs.org/) for the client.
 
 ```bash
-cp .env.example .env   # set OPENAI_API_KEY
+cp .env.example .env   # set your API key
 export $(grep -v '^#' .env | xargs)   # load env for Deno
 
 # Terminal 1 — API + static (after first client build)
@@ -142,7 +142,7 @@ deno task build:client   # first time only
 deno task dev
 
 # Terminal 2 — Vite dev server with HMR (proxies /api to :8000)
-cd client && pnpm install && pnpm dev
+cd client && pnpm install && pnpm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) for development with hot reload. The Vite dev server proxies `/api` to the Deno server on port 8000.
