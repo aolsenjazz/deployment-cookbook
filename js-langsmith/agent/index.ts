@@ -1,15 +1,8 @@
 import { MemorySaver } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
 import { createDeepAgent } from "deepagents";
 
+import { coordinatorModel, subagentModel } from "./model.js";
 import { calculator, searchWeb } from "./tools.js";
-
-const coordinatorModel = new ChatOpenAI({
-  model: "gpt-5.4-mini",
-  reasoning: { effort: "low", summary: "auto" },
-});
-
-const subagentModel = new ChatOpenAI({ model: "gpt-5.4-mini" });
 
 /**
  * In-memory checkpointer for local `langgraph dev`.

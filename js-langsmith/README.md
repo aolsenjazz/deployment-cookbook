@@ -33,7 +33,7 @@ During local development, `pnpm run dev` starts both the LangGraph dev server an
 ### What you need
 
 - A [LangSmith API key](https://docs.langchain.com/langsmith/create-account-api-key) with deployment access.
-- An OpenAI API key for the agent model.
+- An API key for your LLM provider.
 - `pnpm`.
 
 ## Run Locally
@@ -42,7 +42,7 @@ During local development, `pnpm run dev` starts both the LangGraph dev server an
 
 ```bash
 cd js-langsmith
-pnpm install
+npm install
 ```
 
 ### 2. Create your local environment file
@@ -54,7 +54,7 @@ cp .env.example .env
 Open `.env` and set:
 
 ```bash
-OPENAI_API_KEY=<your OpenAI API key>
+OPENAI_API_KEY=<your API key>
 ```
 
 Leave `LANGSMITH_API_KEY` and `VITE_AGENT_API_URL` empty for local development. You only need `LANGSMITH_API_KEY` when deploying or testing the UI against a remote LangSmith deployment.
@@ -62,7 +62,7 @@ Leave `LANGSMITH_API_KEY` and `VITE_AGENT_API_URL` empty for local development. 
 ### 3. Start the agent and UI with one command
 
 ```bash
-pnpm run dev
+npm run dev
 ```
 
 This starts both processes:
@@ -87,7 +87,7 @@ When `VITE_AGENT_API_URL` is empty, the Vite app uses its local proxy at `/api/l
 Your `.env` must include:
 
 ```bash
-OPENAI_API_KEY=<your OpenAI API key>
+OPENAI_API_KEY=<your API key>
 LANGSMITH_API_KEY=<your LangSmith API key>
 ```
 
@@ -102,7 +102,7 @@ If `LANGSMITH_DEPLOYMENT_NAME` is unset, the deployment name defaults to the dir
 ### 2. Deploy the agent to LangSmith
 
 ```bash
-pnpm run deploy
+npm run deploy
 ```
 
 This runs:
@@ -134,7 +134,7 @@ VITE_AGENT_API_URL=https://your-app.us.langgraph.app
 Then run the UI:
 
 ```bash
-pnpm run dev
+npm run dev
 ```
 
 The browser client reuses `LANGSMITH_API_KEY` when talking to the remote deployment.
@@ -155,16 +155,16 @@ In Vercel:
    - `VITE_AGENT_API_URL`: the LangSmith deployment root URL.
    - `LANGSMITH_API_KEY`: the LangSmith API key used by the demo client.
 
-The agent is deployed separately with `pnpm run deploy`. The frontend deploy only hosts the React app.
+The agent is deployed separately with `npm run deploy`. The frontend deploy only hosts the React app.
 
 ## Troubleshooting
 
-- `pnpm run dev` starts but the UI cannot connect: leave `VITE_AGENT_API_URL` empty for local dev, then restart `pnpm run dev`.
+- `npm run dev` starts but the UI cannot connect: leave `VITE_AGENT_API_URL` empty for local dev, then restart `npm run dev`.
 - The agent fails to answer locally: confirm `OPENAI_API_KEY` is set in `.env`.
-- `pnpm run deploy` fails with an auth error: confirm `LANGSMITH_API_KEY` has deployment access.
+- `npm run deploy` fails with an auth error: confirm `LANGSMITH_API_KEY` has deployment access.
 - The remote UI fails to connect: confirm `VITE_AGENT_API_URL` is the deployment root URL with no path suffix.
 - Threads disappear after restarting local dev: local `langgraph dev` uses the in-memory `MemorySaver`; LangSmith Deployment provides durable storage in production.
-- You changed files in `agent/` but production did not change: run `pnpm run deploy` again.
+- You changed files in `agent/` but production did not change: run `npm run deploy` again.
 
 ## Learn The Project
 
@@ -175,7 +175,6 @@ The LangSmith backend lives in `agent/`:
 ```text
 agent/
 ├── index.ts       # createDeepAgent graph
-├── middleware.ts  # response middleware
 └── tools.ts       # custom code tools
 ```
 
@@ -184,7 +183,6 @@ agent/
 ```ts
 export const agent = createDeepAgent({
   model: coordinatorModel,
-  middleware: [stripReasoningReplay],
   checkpointer,
   subagents: [
     // researcher and math-whiz
@@ -226,21 +224,21 @@ See the [Agent Server API reference](https://docs.langchain.com/langsmith/server
 Run both local processes:
 
 ```bash
-pnpm run dev
+npm run dev
 ```
 
 Run them separately:
 
 ```bash
-pnpm run dev:agent
-pnpm run dev:web
+npm run dev:agent
+npm run dev:web
 ```
 
 Build and preview the frontend:
 
 ```bash
-pnpm build
-pnpm preview
+npm run build
+npm run preview
 ```
 
 ### CI/CD

@@ -81,8 +81,8 @@ export function Conversation({
 
       {messages.length === 0 && !stream.isLoading && stream.error ? (
         <div className="error">
-          Could not reach the agent API. Make sure the Deno server is running and
-          <code>OPENAI_API_KEY</code> is set, then try again.
+          Could not reach the agent API. Make sure the dev server is running and
+          your API key is set, then try again.
         </div>
       ) : null}
     </>
