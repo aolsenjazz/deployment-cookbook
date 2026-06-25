@@ -7,13 +7,13 @@ Next.js Route Handlers (HTTP + SSE). No separate backend process.
 
 ## Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY&envDescription=OpenAI%20API%20key%20for%20the%20agent%20and%20its%20subagents)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Fdeployment-cookbook&root-directory=js-next&env=OPENAI_API_KEY&envDescription=API%20key%20for%20the%20agent%20and%20its%20subagents)
 
 1. Click **Deploy with Vercel** (or import
    [`langchain-ai/deployment-cookbook`](https://github.com/langchain-ai/deployment-cookbook)
    manually).
 2. Set **Root Directory** to `js-next`.
-3. Add `OPENAI_API_KEY` in project settings.
+3. Add your LLM provider's API key in project settings (e.g. `OPENAI_API_KEY`).
 4. Deploy.
 
 That is all that is required for a first deploy. The route handlers already set
@@ -141,7 +141,7 @@ See also: [checkpointer libraries](https://docs.langchain.com/oss/javascript/lan
 ## Local development
 
 ```bash
-cp .env.example .env.local   # set OPENAI_API_KEY
+cp .env.example .env.local   # set your API key
 pnpm install
 pnpm dev
 ```

@@ -1,10 +1,19 @@
 import "server-only";
 
 import { MemorySaver } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
 import { createDeepAgent } from "deepagents";
 
 import { calculator, searchWeb } from "./tools";
+import { coordinatorModel, subagentModel } from "./model";
+
+/**
+ * In-memory checkpointer — the single source of truth for threads.
+ *
+ * Exported so the server can enumerate threads (via `checkpointer.storage`) and
+ * delete them (`checkpointer.deleteThread`). It is process-local and volatile:
+ * restarting the server clears every thread.
+ */
+export const checkpointer = new MemorySaver();
 
 /**
  * A "deep agent" coordinator with two subagents.
@@ -16,44 +25,11 @@ import { calculator, searchWeb } from "./tools";
  * surfaces those as `stream.subagents`, which the UI renders in dedicated
  * cards.
  *
- * A concrete `ChatOpenAI` instance is passed as the model (instead of a model
- * string) so `langchain`'s string-based `initChatModel` lookup does not have to
- * resolve `@langchain/openai` under the package manager's layout.
- *
- * Reasoning summaries are enabled on the coordinator: over the Responses API,
- * OpenAI returns reasoning *summaries* (not raw chain-of-thought) as
- * `{ type: "reasoning" }` standard content blocks. These stream through the
- * `messages` channel and the UI renders them in a collapsible "Thinking"
- * section.
- *
- * The tool-using subagents deliberately use a plain (non-Responses) model. The
- * Responses API replays prior reasoning items by id on each tool-loop step, and
- * deep-agent subagent history can surface those items with empty ids
- * (`400 Invalid 'input[..].id': ''`). Keeping subagents on standard
- * chat-completions tool calling avoids that, while the orchestrator — which
- * only delegates via the `task` tool — keeps its reasoning summaries.
- *
- * The agent is compiled with an in-memory `MemorySaver` checkpointer so the
+ * Let'sThe agent is compiled with an in-memory `MemorySaver` checkpointer so the
  * backend can persist and rehydrate per-thread conversation state. Swap this
  * for a durable checkpointer (Postgres, SQLite, …) before deploying — see the
  * note in `lib/server/registry.ts`.
  */
-const coordinatorModel = new ChatOpenAI({
-  model: "gpt-5.4-mini",
-  reasoning: { effort: "low", summary: "auto" },
-});
-
-const subagentModel = new ChatOpenAI({ model: "gpt-5.4-mini" });
-
-/**
- * In-memory checkpointer — the single source of truth for threads.
- *
- * Exported so the server can enumerate threads (via `checkpointer.storage`) and
- * delete them (`checkpointer.deleteThread`). It is process-local and volatile:
- * restarting the server clears every thread.
- */
-export const checkpointer = new MemorySaver();
-
 export const agent = createDeepAgent({
   model: coordinatorModel,
   checkpointer,
