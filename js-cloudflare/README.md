@@ -23,13 +23,13 @@ separate backend process — one Worker serves the SPA and the protocol API.
 
    ```bash
    npx wrangler login
-   npx wrangler secret put OPENAI_API_KEY  # or your provider's key name
+   npx wrangler secret put OPENAI_API_KEY  # or your provider's API key
    ```
 
 3. Deploy:
 
    ```bash
-   pnpm run deploy
+   npm run deploy
    ```
 
 Wrangler uploads the Vite build (SPA) and the Worker script in one deploy.
@@ -147,8 +147,8 @@ See also: [checkpointer libraries](https://docs.langchain.com/oss/javascript/lan
 
 ```bash
 cp .env.example .dev.vars   # set your API key
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173). The Cloudflare Vite plugin
@@ -156,9 +156,9 @@ runs your Worker in the Workers runtime during dev, so `/api/*` routes behave
 like production.
 
 ```bash
-pnpm build    # production build (client + worker)
-pnpm preview  # preview the production build locally
-pnpm typecheck
+npm run build    # production build (client + worker)
+npm run preview  # preview the production build locally
+npm run typecheck
 ```
 
 ## Project layout
