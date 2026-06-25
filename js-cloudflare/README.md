@@ -14,16 +14,16 @@ separate backend process — one Worker serves the SPA and the protocol API.
 
    ```bash
    cd js-cloudflare
-   cp .env.example .dev.vars   # set OPENAI_API_KEY for local dev
-   pnpm install
-   pnpm build
+   cp .env.example .dev.vars   # set your API key for local dev
+   npm install
+   npm run build
    ```
 
 2. Log in and set your secret:
 
    ```bash
    npx wrangler login
-   npx wrangler secret put OPENAI_API_KEY
+   npx wrangler secret put OPENAI_API_KEY  # or your provider's key name
    ```
 
 3. Deploy:
@@ -34,7 +34,7 @@ separate backend process — one Worker serves the SPA and the protocol API.
 
 Wrangler uploads the Vite build (SPA) and the Worker script in one deploy.
 `nodejs_compat` and `nodejs_compat_populate_process_env` are enabled so LangChain
-can read `OPENAI_API_KEY` from the environment.
+can read your API key from the environment.
 
 `wrangler.jsonc` registers the `ThreadSession` Durable Object with
 `new_sqlite_classes`, which is required on the Workers **Free** plan (error
@@ -146,7 +146,7 @@ See also: [checkpointer libraries](https://docs.langchain.com/oss/javascript/lan
 ## Local development
 
 ```bash
-cp .env.example .dev.vars   # set OPENAI_API_KEY
+cp .env.example .dev.vars   # set your API key
 pnpm install
 pnpm dev
 ```

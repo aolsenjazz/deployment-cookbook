@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "pnpm build && wrangler deploy --config dist/js_cloudflare/wrangler.json",
+    "deploy": "npm run build && wrangler deploy --config dist/js_cloudflare/wrangler.json",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint ."
   },
@@ -18,7 +18,7 @@
     "@langchain/openai": "^1.5.2",
     "@langchain/protocol": "^0.0.18",
     "@langchain/react": "^1.0.25",
-    "deepagents": "https://pkg.pr.new/deepagents@8ec2941",
+    "deepagents": "^1.10.5",
     "hono": "^4.12.26",
     "langchain": "^1.5.1",
     "mathjs": "^15.2.0",
@@ -38,6 +38,5 @@
     "typescript": "^6",
     "vite": "^8.0.16",
     "wrangler": "^4.103.0"
-  },
-  "packageManager": "pnpm@11.8.0"
+  }
 }
