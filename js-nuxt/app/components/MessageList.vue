@@ -42,6 +42,6 @@ const showTypingIndicator = computed(() =>
     class="error"
   >
     Could not reach the agent API. Make sure the dev server is running and
-    <code>OPENAI_API_KEY</code> is set, then try again.
+    your API key is set, then try again.
   </div>
 </template>

@@ -1,7 +1,0 @@
-allowBuilds:
-  '@parcel/watcher': true
-  esbuild: true
-minimumReleaseAgeExclude:
-  - '@langchain/*'
-  - langchain
-  - deepagents

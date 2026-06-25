@@ -28,11 +28,10 @@ of React hooks.
   clickable chip per subagent; selecting one drills into its own chat view,
   scoped to its namespaced `messages` and `tools` channels via `useMessages`.
 - **Token & reasoning streaming.** Assistant tokens and tool-call lifecycle
-  events stream over the `messages` and `tools` channels through `useStream`. The
-  coordinator runs a reasoning model over the Responses API, so its reasoning
-  *summaries* (`{ type: "reasoning" }` content blocks) stream into a collapsible
-  "Thinking" block that auto-expands while it streams and collapses when the turn
-  settles.
+  events stream over the `messages` and `tools` channels through `useStream`. If
+  the coordinator model supports reasoning, its reasoning summaries
+  (`{ type: "reasoning" }` content blocks) stream into a collapsible "Thinking"
+  block that auto-expands while it streams and collapses when the turn settles.
 
 ## Prerequisites
 
@@ -40,7 +39,7 @@ of React hooks.
 cp .env.example .env
 ```
 
-Set `OPENAI_API_KEY` in `.env`. Nitro loads it automatically in development.
+Set your provider's API key in `.env`. Nitro loads it automatically in development.
 
 ```bash
 pnpm install
@@ -49,7 +48,7 @@ pnpm install
 ## Run
 
 ```bash
-pnpm dev
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). Send the example prompt and
@@ -59,9 +58,9 @@ dedicated cards.
 Other commands:
 
 ```bash
-pnpm build      # production build
-pnpm preview    # preview the production build
-pnpm typecheck  # vue-tsc over the project
+pnpm run build      # production build
+pnpm run preview    # preview the production build
+pnpm run typecheck  # vue-tsc over the project
 ```
 
 ## How it works
@@ -69,14 +68,8 @@ pnpm typecheck  # vue-tsc over the project
 ### Backend (`server/`)
 
 - `server/agent/index.ts` — the `createDeepAgent` coordinator and its subagents,
-  compiled with an exported `MemorySaver` checkpointer. The coordinator uses a
-  reasoning model over the Responses API; the tool-using subagents use a plain
-  chat-completions model (to avoid the Responses API replaying reasoning items by
-  id through the checkpointer).
-- `server/agent/middleware.ts` — `stripReasoningReplay`: rebuilds prior assistant
-  messages from `content` + `tool_calls` so stale reasoning/function-call item
-  ids are never replayed to the Responses API (which would 400). State is
-  untouched, so the UI still renders each turn's reasoning.
+  compiled with an exported `MemorySaver` checkpointer. The coordinator and
+  subagent models are configured in `./model`.
 - `server/agent/tools.ts` — mock `search_web` and `calculator` tools (offline).
 - `server/utils/session.ts` — `LocalThreadSession`: buffers protocol events in a
   LangGraph `StreamChannel`, filters subscriptions with `matchesSubscription`,

@@ -4,8 +4,7 @@ import { AIMessage, type BaseMessage } from "@langchain/core/messages";
  * Extract reasoning-summary text from a message.
  *
  * Reasoning models surface their summaries as `{ type: "reasoning" }` standard
- * content blocks (see `@langchain/openai`'s Responses API converter). Only AI
- * messages carry reasoning; everything else returns an empty string.
+ * content blocks. Only AI messages carry reasoning; everything else returns an empty string.
  */
 export function getReasoningText(message: BaseMessage): string {
   if (!AIMessage.isInstance(message)) return "";

@@ -7,19 +7,6 @@
  * `math-whiz`), every lookup or calculation is delegated through the `task`
  * tool — which is exactly what surfaces as a subagent card in the UI.
  *
- * Reasoning summaries are enabled on the coordinator: over the Responses API,
- * OpenAI returns reasoning *summaries* (not raw chain-of-thought) as
- * `{ type: "reasoning" }` standard content blocks. These stream through the
- * `messages` channel and the UI renders them in a collapsible "Thinking"
- * section.
- *
- * The tool-using subagents deliberately use a plain (non-Responses) model. The
- * Responses API replays prior reasoning items by id on each tool-loop step, and
- * deep-agent subagent history can surface those items with empty ids
- * (`400 Invalid 'input[..].id': ''`). Keeping subagents on standard
- * chat-completions tool calling avoids that, while the coordinator — which only
- * delegates via the `task` tool — keeps its reasoning summaries.
- *
  * The agent is compiled with an in-memory `MemorySaver` checkpointer so the
  * Nitro backend can persist and rehydrate per-thread conversation state. The
  * checkpointer is the single source of truth for the thread list — see the
@@ -27,18 +14,10 @@
  */
 
 import { MemorySaver } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
 import { createDeepAgent } from "deepagents";
 
+import { coordinatorModel, subagentModel } from "./model";
 import { calculator, searchWeb } from "./tools";
-
-const coordinatorModel = new ChatOpenAI({
-  model: "gpt-5.4-mini",
-  useResponsesApi: true,
-  reasoning: { effort: "low", summary: "auto" },
-});
-
-const subagentModel = new ChatOpenAI({ model: "gpt-5.4-mini" });
 
 /**
  * In-memory checkpointer — the single source of truth for threads.
